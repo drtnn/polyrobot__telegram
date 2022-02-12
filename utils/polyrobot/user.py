@@ -1,8 +1,10 @@
 from datetime import date, datetime
+from typing import List
 
 from aiohttp.http_exceptions import HttpProcessingError
 
 from utils.polyrobot import api_service as APIService
+from utils.polyrobot.profile import Profile
 from utils.polyrobot.schedule import ScheduledLesson
 
 
@@ -15,14 +17,15 @@ class User:
         self.id, self.full_name, self.username = id, full_name, username
 
     # API to get data direct from MosPolytech
-    async def schedule(self):
+    async def schedule(self) -> dict:
         return await APIService.get(f"/telegram/{self.id}/schedule/")
 
-    async def session_schedule(self):
+    async def session_schedule(self) -> dict:
         return await APIService.get(f"/telegram/{self.id}/session-schedule/")
 
-    async def information(self):
-        return await APIService.get(f"/telegram/{self.id}/information/")
+    async def profile(self) -> Profile:
+        data = await APIService.get(f"/telegram/{self.id}/profile/")
+        return Profile.deserialize(data["user"])
 
     async def payments(self):
         return await APIService.get(f"/telegram/{self.id}/payments/")
@@ -38,7 +41,7 @@ class User:
     # API to get data from PolyRobot
     async def scheduled_lesson(
             self, date_obj: date = None, date_from: datetime = None, date_to: datetime = None
-    ):
+    ) -> List[ScheduledLesson]:
         url = f"/telegram/{self.id}/scheduled-lesson"
         if date_obj:
             url += f"?date={date_obj.strftime('%Y-%m-%d')}"

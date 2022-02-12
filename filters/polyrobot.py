@@ -14,7 +14,7 @@ class IsAuthenticated(BoundFilter):
     async def check(self, message: Message):
         try:
             user = await User.get(message.from_user.id)
-            await user.information()
+            await user.profile()
         except HttpProcessingError:
             return False
         else:

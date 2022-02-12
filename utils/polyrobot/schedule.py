@@ -15,7 +15,7 @@ class LessonRoom(Deserializable):
         return self.number
 
 
-class LessonPlace:
+class LessonPlace(Deserializable):
     title: str
     link: str
     rooms: List[LessonRoom]
@@ -30,7 +30,7 @@ class LessonPlace:
     @classmethod
     def deserialize(cls, data: dict):
         data[cls.ROOMS] = [LessonRoom.deserialize(room) for room in data[cls.ROOMS]]
-        return cls(**data)
+        return super().deserialize(data)
 
     def to_message_text(self) -> str:
         if self.link:
@@ -49,7 +49,7 @@ class LessonTeacher(Deserializable):
         return f"<i>{self.full_name}</i>"
 
 
-class Lesson:
+class Lesson(Deserializable):
     title: str
     group: str
     type: str
@@ -70,14 +70,14 @@ class Lesson:
     def deserialize(cls, data: dict):
         data[cls.PLACE] = LessonPlace.deserialize(data[cls.PLACE])
         data[cls.TEACHERS] = [LessonTeacher.deserialize(teacher) for teacher in data[cls.TEACHERS]]
-        return cls(**data)
+        return super().deserialize(data)
 
     def to_message_text(self) -> str:
         return f"{self.place.to_message_text()}\n<b>{self.title} ({self.type})</b>\n" + \
                ", ".join([teacher.to_message_text() for teacher in self.teachers])
 
 
-class ScheduledLesson:
+class ScheduledLesson(Deserializable):
     id: str
     lesson: Lesson
     datetime: datetime
@@ -96,7 +96,7 @@ class ScheduledLesson:
     def deserialize(cls, data: dict):
         data[cls.LESSON] = Lesson.deserialize(data[cls.LESSON])
         data[cls.DATETIME] = datetime.fromisoformat(data[cls.DATETIME])
-        return cls(**data)
+        return super().deserialize(data)
 
     @property
     def time_text(self) -> str:

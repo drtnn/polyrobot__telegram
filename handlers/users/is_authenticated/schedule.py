@@ -3,6 +3,7 @@ from datetime import date
 from aiogram.types import Message, CallbackQuery
 from aiogram.utils.exceptions import MessageToEditNotFound
 
+from keyboards.default.base import SCHEDULE_BUTTON
 from keyboards.inline.callback_data import schedule_callback
 from keyboards.inline.schedule import generate_one_day_schedule_message_buttons
 from loader import dp
@@ -24,6 +25,11 @@ async def bot_schedule_command(message: Message):
     )
 
 
+@dp.message_handler(text=SCHEDULE_BUTTON, is_authenticated=True)
+async def bot_schedule_text(message: Message):
+    await bot_schedule_command(message)
+
+
 @dp.callback_query_handler(schedule_callback.filter())
 async def bot_schedule_date_callback(call: CallbackQuery, callback_data: dict):
     if callback_data['date'] == ScheduledLesson.TODAY:
@@ -35,9 +41,4 @@ async def bot_schedule_date_callback(call: CallbackQuery, callback_data: dict):
     text = generate_one_day_schedule_message_text(date_obj=date_obj, scheduled_lessons=scheduled_lessons)
     reply_markup = generate_one_day_schedule_message_buttons(date_obj)
 
-    try:
-        await dp.bot.edit_message_text(text=text, chat_id=call.message.chat.id, message_id=call.message.message_id,
-                                       reply_markup=reply_markup, disable_web_page_preview=True)
-    except MessageToEditNotFound:
-        await dp.bot.send_message(text=text, chat_id=call.message.chat.id, reply_markup=reply_markup,
-                                  disable_web_page_preview=True)
+    await call.message.edit_text(text=text, reply_markup=reply_markup, disable_web_page_preview=True)

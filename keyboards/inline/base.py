@@ -10,6 +10,6 @@ def links_keyboard(telegram_id: int):
         InlineKeyboardButton(text="@mospolychat", url="t.me/mospolychat")
     )
     keyboard.row(
-        InlineKeyboardButton(text="Войти с МосПолитех", url=f"{POLYROBOT_ENDPOINT}/login-to-mospolytech/{telegram_id}/")
+        InlineKeyboardButton(text="Войти через Московский Политех", url=f"{POLYROBOT_ENDPOINT}/login-to-mospolytech/{telegram_id}/")
     )
     return keyboard
