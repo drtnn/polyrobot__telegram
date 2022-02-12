@@ -5,9 +5,7 @@ from loader import dp
 
 
 @dp.message_handler(CommandHelp())
-async def bot_help(message: types.Message):
-    text = ("Список команд: ",
-            "/start - Начать диалог",
-            "/help - Получить справку")
-    
-    await message.answer("\n".join(text))
+async def bot_help_command(message: types.Message):
+    await message.answer(
+        "🤖 Что я могу?\n    • /start – регистрация с данными личного кабинета Мосполитеха.\n    • /schedule – расписание твоей группы на сегодня."
+    )
