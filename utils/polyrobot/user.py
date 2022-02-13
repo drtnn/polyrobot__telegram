@@ -4,6 +4,7 @@ from typing import List
 from aiohttp.http_exceptions import HttpProcessingError
 
 from utils.polyrobot import api_service as APIService
+from utils.polyrobot.academic_performance import AcademicPerformance
 from utils.polyrobot.profile import Profile
 from utils.polyrobot.schedule import ScheduledLesson
 
@@ -32,11 +33,11 @@ class User:
 
     async def academic_performance(self, semester_number: int = None):
         if semester_number:
-            return await APIService.get(
-                f"/telegram/{self.id}/academic-performance?semester_number={semester_number}"
-            )
+            data = await APIService.get(f"/telegram/{self.id}/academic-performance?semester_number={semester_number}")
         else:
-            return await APIService.get(f"/telegram/{self.id}/academic-performance/")
+            data = await APIService.get(f"/telegram/{self.id}/academic-performance/")
+        return [AcademicPerformance.deserialize(academic_performance) for academic_performance in
+                data['academicPerformance']]
 
     # API to get data from PolyRobot
     async def scheduled_lesson(

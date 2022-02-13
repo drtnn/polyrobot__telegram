@@ -21,7 +21,7 @@ async def bot_profile_text(message: Message):
 
 
 @dp.callback_query_handler(orders_callback.filter())
-async def bot_schedule_date_callback(call: CallbackQuery, callback_data: dict):
+async def bot_profile_callback(call: CallbackQuery, callback_data: dict):
     user = User(call.from_user.id, call.from_user.full_name, call.from_user.username)
     profile = await user.profile()
 
