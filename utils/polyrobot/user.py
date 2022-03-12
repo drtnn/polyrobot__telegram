@@ -17,6 +17,22 @@ class User:
     def __init__(self, id: int, full_name: str, username: str = None):
         self.id, self.full_name, self.username = id, full_name, username
 
+    @staticmethod
+    async def get(id: int):
+        data = await APIService.get(f"/telegram/{id}/")
+        return User(**data)
+
+    @staticmethod
+    async def get_or_create(id: int, full_name: str, username: str):
+        try:
+            data = await APIService.get(f"/telegram/{id}/")
+        except HttpProcessingError as error:
+            if error.code == 404:
+                data = await APIService.post("/telegram/",
+                                             json={"id": id, "full_name": full_name, "username": username})
+            raise error
+        return User(**data)
+
     # API to get data direct from MosPolytech
     async def schedule(self) -> dict:
         return await APIService.get(f"/telegram/{self.id}/schedule/")
@@ -53,19 +69,3 @@ class User:
                 url += f"?date={date_obj.strftime('%Y-%m-%d')}"
 
         return [ScheduledLesson.deserialize(scheduled_lesson) for scheduled_lesson in await APIService.get(url)]
-
-    @staticmethod
-    async def get(id: int):
-        data = await APIService.get(f"/telegram/{id}/")
-        return User(**data)
-
-    @staticmethod
-    async def get_or_create(id: int, full_name: str, username: str):
-        try:
-            data = await APIService.get(f"/telegram/{id}/")
-        except HttpProcessingError as error:
-            if error.code == 404:
-                data = await APIService.post("/telegram/",
-                                             json={"id": id, "full_name": full_name, "username": username})
-            raise error
-        return User(**data)

@@ -38,4 +38,4 @@ class AcademicPerformance(Deserializable):
             setattr(self, key, value)
 
     def to_message_text(self):
-        return f"🧑🏻‍🏫 <b>{self.name}</b>\n\n<b>Курс:</b> {self.course}\n<b>Форма аттестации:</b> {self.exam_type}\n<b>Дата проведения:</b> {self.exam_date.strftime('%d.%m.%Y')}\n<b>Оценка:</b> {self.grade}\n\n<b>Преподаватель:</b> {self.teacher}\n<b>Кафедра:</b> {self.chair}"
+        return f"🧑🏻‍🏫 <b>{self.name}</b>\n\n<b>Курс:</b> {self.course}\n<b>Форма аттестации:</b> {self.exam_type}\n<b>Дата проведения:</b> {self.exam_date.strftime('%d.%m.%Y')}\n<b>Оценка:</b> {self.grade}\n\n<b>Преподаватель:</b> <code>{self.teacher}</code>\n<b>Кафедра:</b> <code>{self.chair}</code>"

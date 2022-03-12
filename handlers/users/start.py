@@ -7,7 +7,7 @@ from loader import dp
 from utils.polyrobot.user import User
 
 
-@dp.message_handler(CommandStart())
+@dp.message_handler(CommandStart(), state='*')
 async def bot_start_command(message: Message):
     await User.get_or_create(message.from_user.id, message.from_user.full_name, message.from_user.username)
     await message.answer("🤖 Привет, я – Робот Политеха.", reply_markup=MENU_KEYBOARD)

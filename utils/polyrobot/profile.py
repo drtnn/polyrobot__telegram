@@ -73,4 +73,4 @@ class Profile(Deserializable):
         return f"👨🏻‍🎓 <b>{self.surname} {self.name} {self.patronymic}</b>\n\n<b>Код студента:</b> {self.code}\n<b>Группа:</b> {self.group}\n<b>Год набора:</b> {self.enter_year}\n<b>Форма обучения:</b> {self.education_form}\n<b>Вид финансирования:</b> {self.finance}\n<b>Уровень образования:</b> {self.degree_level}\n\n<b>Факультет:</b> <code>{self.faculty}</code>\n<b>Специальность:</b> <code>{self.specialty}</code>\n<b>Специализация:</b> <code>{self.specialization}</code>"
 
     def orders_to_message_text(self) -> str:
-        return "\n".join(self.orders)
+        return "\n".join("・ " + order for order in self.orders)
