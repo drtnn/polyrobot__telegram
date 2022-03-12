@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from io import BytesIO
 from typing import List
 
 from utils.polyrobot import api_service as APIService
@@ -129,14 +128,17 @@ class ScheduledLessonNote(Deserializable):
     id: str
     scheduled_lesson: str
     text: str
+    created_by: int
     files: List[File]
 
     FILES = "files"
+    CREATED_BY = "created_by"
 
-    def __init__(self, id: str, scheduled_lesson: str, text: str, files: List[File] = None):
+    def __init__(self, id: str, scheduled_lesson: str, text: str, created_by: int, files: List[File] = None):
         self.id = id
         self.scheduled_lesson = scheduled_lesson
         self.text = text
+        self.created_by = created_by
         self.files = files
 
     @classmethod
@@ -150,8 +152,9 @@ class ScheduledLessonNote(Deserializable):
         return cls.deserialize(data)
 
     @classmethod
-    async def create(cls, scheduled_lesson_id: str, text: str):
+    async def create(cls, created_by: int, scheduled_lesson_id: str, text: str):
         data = await APIService.post(f"/scheduled-lesson/{scheduled_lesson_id}/add-note/", json={
+            "created_by": created_by,
             "scheduled_lesson": scheduled_lesson_id,
             "text": text
         })
@@ -165,3 +168,6 @@ class ScheduledLessonNote(Deserializable):
         })
 
         return self.deserialize(data)
+
+    async def delete(self):
+        await APIService.delete(f"/scheduled-lesson-note/{self.id}/")

@@ -5,18 +5,18 @@ from io import BytesIO
 from time import time
 
 from aiogram.dispatcher import FSMContext
-from aiogram.types import Message, CallbackQuery, MediaGroup, InputMediaDocument
+from aiogram.types import Message, CallbackQuery
 
 from keyboards.default.base import SCHEDULE_BUTTON
 from keyboards.inline.callback_data import schedule_callback, scheduled_lesson_callback, scheduled_lesson_note_callback, \
-    scheduled_lesson_add_note_callback
+    scheduled_lesson_add_note_callback, scheduled_lesson_note_add_file_callback, scheduled_lesson_delete_note_callback
 from keyboards.inline.schedule import schedule_buttons, scheduled_lesson_buttons, scheduled_lesson_note_buttons, \
     scheduled_lesson_add_file_buttons
 from loader import dp, bot
 from states.schedule import ScheduledLessonNoteState
+from utils.polyrobot.messages import schedule_message_text
 from utils.polyrobot.schedule import ScheduledLesson, ScheduledLessonNote
 from utils.polyrobot.user import User
-from utils.polyrobot.messages import schedule_message_text
 
 
 @dp.message_handler(text=SCHEDULE_BUTTON, is_authenticated=True, state='*')
@@ -66,7 +66,8 @@ async def bot_scheduled_lesson_add_note_callback(call: CallbackQuery, callback_d
 @dp.message_handler(is_authenticated=True, state=ScheduledLessonNoteState.text)
 async def bot_scheduled_lesson_add_note_text_callback(message: Message, state: FSMContext):
     data = await state.get_data()
-    note = await ScheduledLessonNote.create(scheduled_lesson_id=data["scheduled_lesson_id"], text=message.text)
+    note = await ScheduledLessonNote.create(created_by=message.from_user.id,
+                                            scheduled_lesson_id=data["scheduled_lesson_id"], text=message.text)
     await state.update_data(scheduled_lesson_note_id=note.id, text=message.text)
     await ScheduledLessonNoteState.file.set()
 
@@ -81,7 +82,7 @@ async def bot_scheduled_lesson_add_note_text_callback(message: Message, state: F
 async def bot_scheduled_lesson_add_note_file_callback(message: Message, state: FSMContext):
     data = await state.get_data()
     note = ScheduledLessonNote(id=data["scheduled_lesson_note_id"], scheduled_lesson=data["scheduled_lesson_id"],
-                               text=data["text"])
+                               text=data["text"], created_by=message.from_user.id)
 
     bytes_io = BytesIO()
     file_data = tuple()
@@ -115,4 +116,27 @@ async def bot_scheduled_lesson_note_callback(call: CallbackQuery, callback_data:
 
     note = await ScheduledLessonNote.get(id=callback_data["scheduled_lesson_note_id"])
 
-    await call.message.answer(text=note.text, reply_markup=scheduled_lesson_note_buttons(scheduled_lesson_note=note))
+    await call.message.edit_text(
+        text=note.text,
+        reply_markup=scheduled_lesson_note_buttons(scheduled_lesson_note=note,
+                                                   for_creator=call.from_user.id == note.created_by)
+    )
+
+
+@dp.callback_query_handler(scheduled_lesson_delete_note_callback.filter(), state='*')
+async def bot_scheduled_lesson_delete_note_callback(call: CallbackQuery, callback_data: dict):
+    note = await ScheduledLessonNote.get(id=callback_data["scheduled_lesson_note_id"])
+    await note.delete()
+
+    return await bot_scheduled_lesson_callback(call=call, callback_data={"scheduled_lesson_id": note.scheduled_lesson})
+
+
+@dp.callback_query_handler(scheduled_lesson_note_add_file_callback.filter(), state='*')
+async def bot_scheduled_lesson_note_add_file_callback(call: CallbackQuery, callback_data: dict):
+    note = await ScheduledLessonNote.get(id=callback_data["scheduled_lesson_note_id"])
+
+    state = dp.current_state(user=call.from_user.id)
+    await state.update_data(scheduled_lesson_id=note.scheduled_lesson, scheduled_lesson_note_id=note.id, text=note.text)
+    await ScheduledLessonNoteState.file.set()
+
+    await call.answer("🤖 Теперь можешь прислать мне файл/фото/видео, а я прикреплю его к заметке.")

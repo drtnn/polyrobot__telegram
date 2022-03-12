@@ -1,5 +1,4 @@
 from datetime import datetime
-from io import BytesIO
 
 from utils.polyrobot import api_service as APIService
 from utils.polyrobot.base import Deserializable

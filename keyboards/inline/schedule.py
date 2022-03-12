@@ -6,7 +6,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from utils.polyrobot.constants import WEEKDAYS
 from utils.polyrobot.schedule import ScheduledLesson, ScheduledLessonNote
 from .callback_data import schedule_callback, scheduled_lesson_callback, scheduled_lesson_note_callback, \
-    scheduled_lesson_add_note_callback
+    scheduled_lesson_add_note_callback, scheduled_lesson_delete_note_callback, scheduled_lesson_note_add_file_callback
 
 
 def schedule_buttons(date_obj: date, scheduled_lessons: List[ScheduledLesson]) -> InlineKeyboardMarkup:
@@ -47,7 +47,7 @@ def scheduled_lesson_buttons(
     keyboard.add(
         *[
             InlineKeyboardButton(
-                text=(note.text[:10] + "…") if len(note.text) > 10 else note.text,
+                text=note.text[:20] if len(note.text) > 20 else note.text,
                 callback_data=scheduled_lesson_note_callback.new(scheduled_lesson_note_id=note.id)
             ) for note in notes
         ]
@@ -69,11 +69,31 @@ def scheduled_lesson_buttons(
     return keyboard
 
 
-def scheduled_lesson_note_buttons(scheduled_lesson_note: ScheduledLessonNote) -> InlineKeyboardMarkup:
+def scheduled_lesson_note_buttons(
+        scheduled_lesson_note: ScheduledLessonNote, for_creator: bool = False
+) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup()
 
     files = scheduled_lesson_note.files
     keyboard.add(*[InlineKeyboardButton(f"Файл №{number + 1}", url=files[number].data) for number in range(len(files))])
+
+    if for_creator:
+        keyboard.row(
+            InlineKeyboardButton(
+                text="➕ Добавить файл",
+                callback_data=scheduled_lesson_note_add_file_callback.new(
+                    scheduled_lesson_note_id=scheduled_lesson_note.id
+                )
+            )
+        )
+        keyboard.row(
+            InlineKeyboardButton(
+                text="❌ Удалить заметку",
+                callback_data=scheduled_lesson_delete_note_callback.new(
+                    scheduled_lesson_note_id=scheduled_lesson_note.id
+                )
+            )
+        )
 
     keyboard.row(
         InlineKeyboardButton(
