@@ -9,8 +9,8 @@ from utils.polyrobot.user import User
 from utils.polyrobot.messages import performance_semester_message_text, performance_lesson_message_text
 
 
-@dp.message_handler(text=ACADEMIC_PERFORMANCE_BUTTON, is_authenticated=True, state='*')
-@dp.message_handler(commands=["performance"], is_authenticated=True, state='*')
+@dp.message_handler(text=ACADEMIC_PERFORMANCE_BUTTON, is_authenticated=True, state="*")
+@dp.message_handler(commands=["performance"], is_authenticated=True, state="*")
 async def bot_academic_performance_command(message: Message):
     user = User(message.from_user.id, message.from_user.full_name, message.from_user.username)
     profile = await user.profile()
@@ -20,7 +20,7 @@ async def bot_academic_performance_command(message: Message):
                          reply_markup=select_semester_buttons(semesters_count))
 
 
-@dp.callback_query_handler(academic_performance.filter(), state='*')
+@dp.callback_query_handler(academic_performance.filter(), state="*")
 async def bot_academic_performance_callback(call: CallbackQuery, callback_data: dict):
     user = User(call.from_user.id, call.from_user.full_name, call.from_user.username)
     profile = await user.profile()
@@ -30,7 +30,7 @@ async def bot_academic_performance_callback(call: CallbackQuery, callback_data: 
                                  reply_markup=select_semester_buttons(semesters_count))
 
 
-@dp.callback_query_handler(academic_performance_semester.filter(), state='*')
+@dp.callback_query_handler(academic_performance_semester.filter(), state="*")
 async def bot_academic_performance_semester_callback(call: CallbackQuery, callback_data: dict):
     user = User(call.from_user.id, call.from_user.full_name, call.from_user.username)
     academic_performances = await user.academic_performance(semester_number=callback_data['semester_number'])
@@ -49,7 +49,7 @@ async def bot_academic_performance_semester_callback(call: CallbackQuery, callba
         await call.answer("Данных за этот семестр нет, попробуй другой!")
 
 
-@dp.callback_query_handler(academic_performance_lesson.filter(), state='*')
+@dp.callback_query_handler(academic_performance_lesson.filter(), state="*")
 async def bot_academic_performance_lesson_callback(call: CallbackQuery, callback_data: dict):
     user = User(call.from_user.id, call.from_user.full_name, call.from_user.username)
     academic_performances = await user.academic_performance()

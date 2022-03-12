@@ -8,17 +8,17 @@ from data.config import POLYROBOT_TOKEN, POLYROBOT_ENDPOINT
 
 async def request(
         method: str, path: str, json: dict = None, data: dict = None, files: dict = None
-) -> Union[dict, list, None]:
+) -> Union[dict, list, bytes, None]:
     client = AsyncClient()
     response = await client.request(method=method, url=POLYROBOT_ENDPOINT + "/api" + path,
                                     headers={"Authorization": f"Token {POLYROBOT_TOKEN}"},
                                     json=json, data=data, files=files, verify=False)
     response.raise_for_status()
 
-    try:
+    if response.headers.get("content-type") == "application/json":
         return response.json()
-    except JSONDecodeError:
-        return
+    else:
+        return response.content
 
 
 async def get(path: str) -> Union[dict, list]:

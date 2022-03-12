@@ -19,8 +19,8 @@ from utils.polyrobot.schedule import ScheduledLesson, ScheduledLessonNote
 from utils.polyrobot.user import User
 
 
-@dp.message_handler(text=SCHEDULE_BUTTON, is_authenticated=True, state='*')
-@dp.message_handler(commands=["schedule"], is_authenticated=True, state='*')
+@dp.message_handler(text=SCHEDULE_BUTTON, is_authenticated=True, state="*")
+@dp.message_handler(commands=["schedule"], is_authenticated=True, state="*")
 async def bot_schedule_command(message: Message):
     user = User(message.from_user.id, message.from_user.full_name, message.from_user.username)
     date_obj = date.today()
@@ -30,7 +30,7 @@ async def bot_schedule_command(message: Message):
                          reply_markup=schedule_buttons(date_obj, scheduled_lessons), disable_web_page_preview=True)
 
 
-@dp.callback_query_handler(schedule_callback.filter(), state='*')
+@dp.callback_query_handler(schedule_callback.filter(), state="*")
 async def bot_schedule_date_callback(call: CallbackQuery, callback_data: dict):
     if callback_data['date'] == ScheduledLesson.TODAY:
         date_obj = date.today()
@@ -44,7 +44,7 @@ async def bot_schedule_date_callback(call: CallbackQuery, callback_data: dict):
                                  disable_web_page_preview=True)
 
 
-@dp.callback_query_handler(scheduled_lesson_callback.filter(), state='*')
+@dp.callback_query_handler(scheduled_lesson_callback.filter(), state="*")
 async def bot_scheduled_lesson_callback(call: CallbackQuery, callback_data: dict):
     scheduled_lesson: ScheduledLesson = await ScheduledLesson.get(id=callback_data["scheduled_lesson_id"])
     notes = await scheduled_lesson.notes()
@@ -54,7 +54,7 @@ async def bot_scheduled_lesson_callback(call: CallbackQuery, callback_data: dict
                                  disable_web_page_preview=True)
 
 
-@dp.callback_query_handler(scheduled_lesson_add_note_callback.filter(), state='*')
+@dp.callback_query_handler(scheduled_lesson_add_note_callback.filter(), state="*")
 async def bot_scheduled_lesson_add_note_callback(call: CallbackQuery, callback_data: dict):
     state = dp.current_state(user=call.from_user.id)
     await state.update_data(scheduled_lesson_id=callback_data["scheduled_lesson_id"])
@@ -109,7 +109,7 @@ async def bot_scheduled_lesson_add_note_file_callback(message: Message, state: F
     )
 
 
-@dp.callback_query_handler(scheduled_lesson_note_callback.filter(), state='*')
+@dp.callback_query_handler(scheduled_lesson_note_callback.filter(), state="*")
 async def bot_scheduled_lesson_note_callback(call: CallbackQuery, callback_data: dict):
     state = dp.current_state(user=call.from_user.id)
     await state.reset_state(with_data=True)
@@ -123,7 +123,7 @@ async def bot_scheduled_lesson_note_callback(call: CallbackQuery, callback_data:
     )
 
 
-@dp.callback_query_handler(scheduled_lesson_delete_note_callback.filter(), state='*')
+@dp.callback_query_handler(scheduled_lesson_delete_note_callback.filter(), state="*")
 async def bot_scheduled_lesson_delete_note_callback(call: CallbackQuery, callback_data: dict):
     note = await ScheduledLessonNote.get(id=callback_data["scheduled_lesson_note_id"])
     await note.delete()
@@ -131,7 +131,7 @@ async def bot_scheduled_lesson_delete_note_callback(call: CallbackQuery, callbac
     return await bot_scheduled_lesson_callback(call=call, callback_data={"scheduled_lesson_id": note.scheduled_lesson})
 
 
-@dp.callback_query_handler(scheduled_lesson_note_add_file_callback.filter(), state='*')
+@dp.callback_query_handler(scheduled_lesson_note_add_file_callback.filter(), state="*")
 async def bot_scheduled_lesson_note_add_file_callback(call: CallbackQuery, callback_data: dict):
     note = await ScheduledLessonNote.get(id=callback_data["scheduled_lesson_note_id"])
 

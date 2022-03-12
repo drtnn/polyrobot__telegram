@@ -7,6 +7,7 @@ async def set_default_commands(dp):
             types.BotCommand("start", "Регистрация"),
             types.BotCommand("help", "Что я могу?"),
             types.BotCommand("schedule", "Расписание студента"),
+            types.BotCommand("export", "Экспорт расписания в календарь"),
             types.BotCommand("profile", "Профиль студента"),
             types.BotCommand("performance", "Успеваемость студента"),
         ]

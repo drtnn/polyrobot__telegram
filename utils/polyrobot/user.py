@@ -69,3 +69,6 @@ class User:
                 url += f"?date={date_obj.strftime('%Y-%m-%d')}"
 
         return [ScheduledLesson.deserialize(scheduled_lesson) for scheduled_lesson in await APIService.get(url)]
+
+    async def export_schedule(self):
+        return await APIService.get(f"/telegram/{self.id}/scheduled-lesson/export")
