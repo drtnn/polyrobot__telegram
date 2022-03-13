@@ -64,7 +64,7 @@ async def bot_scheduled_lesson_add_note_callback(call: CallbackQuery, callback_d
 
 
 @dp.message_handler(is_authenticated=True, state=ScheduledLessonNoteState.text)
-async def bot_scheduled_lesson_add_note_text_callback(message: Message, state: FSMContext):
+async def bot_scheduled_lesson_add_note_text(message: Message, state: FSMContext):
     data = await state.get_data()
     note = await ScheduledLessonNote.create(created_by=message.from_user.id,
                                             scheduled_lesson_id=data["scheduled_lesson_id"], text=message.text)
@@ -79,7 +79,7 @@ async def bot_scheduled_lesson_add_note_text_callback(message: Message, state: F
 
 @dp.message_handler(content_types=["photo", "video", "document"], is_authenticated=True,
                     state=ScheduledLessonNoteState.file)
-async def bot_scheduled_lesson_add_note_file_callback(message: Message, state: FSMContext):
+async def bot_scheduled_lesson_add_note_file(message: Message, state: FSMContext):
     data = await state.get_data()
     note = ScheduledLessonNote(id=data["scheduled_lesson_note_id"], scheduled_lesson=data["scheduled_lesson_id"],
                                text=data["text"], created_by=message.from_user.id)

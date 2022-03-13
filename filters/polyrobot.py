@@ -1,6 +1,6 @@
 from aiogram.dispatcher.filters import BoundFilter
 from aiogram.types import Message
-from aiohttp.http_exceptions import HttpProcessingError
+from http3.exceptions import HttpError
 
 from utils.polyrobot.user import User
 
@@ -13,9 +13,9 @@ class IsAuthenticated(BoundFilter):
 
     async def check(self, message: Message):
         try:
-            user = await User.get(message.from_user.id)
+            user = User(message.from_user.id, message.from_user.full_name, message.from_user.username)
             await user.profile()
-        except HttpProcessingError:
+        except HttpError:
             return False
         else:
             return True

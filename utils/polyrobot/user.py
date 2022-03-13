@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from typing import List
 
-from aiohttp.http_exceptions import HttpProcessingError
+from http3.exceptions import HttpError
 
 from utils.polyrobot import api_service as APIService
 from utils.polyrobot.academic_performance import AcademicPerformance
@@ -26,11 +26,8 @@ class User:
     async def get_or_create(id: int, full_name: str, username: str):
         try:
             data = await APIService.get(f"/telegram/{id}/")
-        except HttpProcessingError as error:
-            if error.code == 404:
-                data = await APIService.post("/telegram/",
-                                             json={"id": id, "full_name": full_name, "username": username})
-            raise error
+        except HttpError as error:
+            data = await APIService.post("/telegram/", json={"id": id, "full_name": full_name, "username": username})
         return User(**data)
 
     # API to get data direct from MosPolytech
