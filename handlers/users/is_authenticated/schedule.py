@@ -2,7 +2,7 @@ import mimetypes
 import os
 from datetime import date
 from io import BytesIO
-from time import time
+from time import time_ns
 
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, CallbackQuery
@@ -85,21 +85,18 @@ async def bot_scheduled_lesson_add_note_file(message: Message, state: FSMContext
                                text=data["text"], created_by=message.from_user.id)
 
     bytes_io = BytesIO()
-    file_data = tuple()
 
-    if message.document or message.video:
-        if message.document:
-            file = message.document
-        elif message.video:
-            file = message.video
-
-        file_data = (file.file_name, await file.download(destination=bytes_io), file.mime_type)
+    if message.document:
+        file = message.document
+    elif message.video:
+        file = message.video
     elif message.photo:
         file = message.photo[-1]
-        file_info = await bot.get_file(file.file_id)
-        mime_type, _ = mimetypes.guess_type(file_info.file_path)
-        _, file_extension = os.path.splitext(file_info.file_path)
-        file_data = (str(time()) + file_extension, await file.download(destination=bytes_io), mime_type)
+
+    file_info = await bot.get_file(file.file_id)
+    mime_type, _ = mimetypes.guess_type(file_info.file_path)
+    _, file_extension = os.path.splitext(file_info.file_path)
+    file_data = (str(time_ns()) + file_extension, await file.download(destination=bytes_io), mime_type)
 
     note = await note.add_files(file_data)
 
