@@ -33,13 +33,13 @@ async def bot_academic_performance_callback(call: CallbackQuery, callback_data: 
 @dp.callback_query_handler(academic_performance_semester.filter(), state="*")
 async def bot_academic_performance_semester_callback(call: CallbackQuery, callback_data: dict):
     user = User(call.from_user.id, call.from_user.full_name, call.from_user.username)
-    academic_performances = await user.academic_performance(semester_number=callback_data['semester_number'])
+    academic_performances = await user.academic_performance(semester_number=callback_data["semester_number"])
 
     if academic_performances:
         await call.message.edit_text(
             text=performance_lesson_message_text(academic_performances),
             reply_markup=select_lesson_buttons(
-                semester_number=callback_data['semester_number'],
+                semester_number=callback_data["semester_number"],
                 id_to_lesson_title={
                     academic_performance.id: academic_performance.name for academic_performance in academic_performances
                 }
@@ -54,7 +54,7 @@ async def bot_academic_performance_lesson_callback(call: CallbackQuery, callback
     user = User(call.from_user.id, call.from_user.full_name, call.from_user.username)
     academic_performances = await user.academic_performance()
     academic_performance = [academic_performance_tmp for academic_performance_tmp in academic_performances
-                            if academic_performance_tmp.id == callback_data['lesson_id']][0]
+                            if academic_performance_tmp.id == callback_data["lesson_id"]][0]
 
     await call.message.edit_text(text=academic_performance.to_message_text(),
-                                 reply_markup=lesson_buttons(callback_data['semester_number']))
+                                 reply_markup=lesson_buttons(callback_data["semester_number"]))

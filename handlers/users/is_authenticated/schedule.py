@@ -32,7 +32,7 @@ async def bot_schedule_command(message: Message):
 
 @dp.callback_query_handler(schedule_callback.filter(), state="*")
 async def bot_schedule_date_callback(call: CallbackQuery, callback_data: dict):
-    if callback_data['date'] == ScheduledLesson.TODAY:
+    if callback_data["date"] == ScheduledLesson.TODAY:
         date_obj = date.today()
     else:
         date_obj = date.fromisoformat(callback_data["date"])

@@ -50,7 +50,7 @@ class User:
         else:
             data = await APIService.get(f"/telegram/{self.id}/academic-performance/")
         return [AcademicPerformance.deserialize(academic_performance) for academic_performance in
-                data['academicPerformance']]
+                data["academicPerformance"]]
 
     # API to get data from PolyRobot
     async def scheduled_lesson(

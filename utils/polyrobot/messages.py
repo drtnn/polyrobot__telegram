@@ -10,7 +10,7 @@ from utils.polyrobot.schedule import ScheduledLesson
 def schedule_message_text(date_obj: date, scheduled_lessons: List[ScheduledLesson]) -> str:
     if scheduled_lessons:
         date_title = f"📆 <b>{date_obj.strftime('%d.%m.%Y')}</b>\n🎓 <b>{WEEKDAYS[date_obj.weekday()]}</b>\n\n"
-        return date_title + '\n\n'.join(
+        return date_title + "\n\n".join(
             scheduled_lesson.to_message_text(with_date=False) for scheduled_lesson in scheduled_lessons
         )
     else:
@@ -29,8 +29,8 @@ def performance_lesson_message_text(academic_performances: List[AcademicPerforma
         academic_performance_by_type[academic_performance.exam_type].append(academic_performance)
 
     for exam_type, academic_performances in academic_performance_by_type.items():
-        text += (f"<b>{exam_type}</b>\n" + '\n'.join(
+        text += (f"<b>{exam_type}</b>\n" + "\n".join(
             f"<b>{academic_performance.name}</b> – {academic_performance.grade}" for academic_performance in
             academic_performances
-        ) + '\n\n')
+        ) + "\n\n")
     return text

@@ -6,7 +6,7 @@ from .callback_data import academic_performance_semester, academic_performance_l
 def select_semester_buttons(semesters_count: int) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup(row_width=2)
     keyboard.add(*[
-        InlineKeyboardButton(f'{num} семестр', callback_data=academic_performance_semester.new(semester_number=num))
+        InlineKeyboardButton(f"{num} семестр", callback_data=academic_performance_semester.new(semester_number=num))
         for num in range(1, semesters_count + 1)
     ])
     return keyboard

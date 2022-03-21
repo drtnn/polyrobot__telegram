@@ -6,7 +6,7 @@ from utils.polyrobot.user import User
 
 
 class IsAuthenticated(BoundFilter):
-    key = 'is_authenticated'
+    key = "is_authenticated"
 
     def __init__(self, is_authenticated):
         self.is_authenticated = is_authenticated
