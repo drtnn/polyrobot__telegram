@@ -5,17 +5,19 @@ from http3.exceptions import HttpError
 
 from utils.polyrobot import api_service as APIService
 from utils.polyrobot.academic_performance import AcademicPerformance
+from utils.polyrobot.base import Deserializable
 from utils.polyrobot.profile import Profile
 from utils.polyrobot.schedule import ScheduledLesson
 
 
-class User:
+class User(Deserializable):
     id: int
     full_name: str
     username: str
+    is_admin: bool
 
-    def __init__(self, id: int, full_name: str, username: str = None):
-        self.id, self.full_name, self.username = id, full_name, username
+    def __init__(self, id: int, full_name: str, is_admin: bool, username: str = None):
+        self.id, self.full_name, self.is_admin, self.username = id, full_name, is_admin, username
 
     @staticmethod
     async def get(id: int):
@@ -29,6 +31,10 @@ class User:
         except HttpError as error:
             data = await APIService.post("/telegram/", json={"id": id, "full_name": full_name, "username": username})
         return User(**data)
+
+    @classmethod
+    async def admins(cls):
+        return [cls.deserialize(data) for data in await APIService.get(f"/telegram/admin/")]
 
     # API to get data direct from MosPolytech
     async def schedule(self) -> dict:
