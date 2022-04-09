@@ -1,8 +1,11 @@
+import asyncio
+
 from aiogram import executor
 
 from loader import dp
 import middlewares, filters, handlers
 from utils.notify_admins import on_startup_notify
+from utils.polyrobot.send_notifications import notify_about_scheduled_lessons
 from utils.set_bot_commands import set_default_commands
 
 
@@ -15,5 +18,6 @@ async def on_startup(dispatcher):
 
 
 if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    loop.create_task(notify_about_scheduled_lessons())
     executor.start_polling(dp, on_startup=on_startup)
-

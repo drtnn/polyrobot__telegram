@@ -13,7 +13,7 @@ async def bot_profile_command(message: Message):
     user = User(message.from_user.id, message.from_user.full_name, message.from_user.username)
     profile = await user.profile()
 
-    await message.answer(text=profile.to_message_text(), reply_markup=profile_keyboard())
+    await message.answer(text=profile.message_text(), reply_markup=profile_keyboard())
 
 
 @dp.callback_query_handler(orders_callback.filter(), state="*")
@@ -21,7 +21,7 @@ async def bot_orders_callback(call: CallbackQuery, callback_data: dict):
     user = User(call.from_user.id, call.from_user.full_name, call.from_user.username)
     profile = await user.profile()
 
-    await call.message.edit_text(text=profile.orders_to_message_text(), reply_markup=orders_keyboard())
+    await call.message.edit_text(text=profile.orders_message_text(), reply_markup=orders_keyboard())
 
 
 @dp.callback_query_handler(profile_callback.filter(), state="*")
@@ -29,4 +29,4 @@ async def bot_profile_callback(call: CallbackQuery, callback_data: dict):
     user = User(call.from_user.id, call.from_user.full_name, call.from_user.username)
     profile = await user.profile()
 
-    await call.message.edit_text(text=profile.to_message_text(), reply_markup=profile_keyboard())
+    await call.message.edit_text(text=profile.message_text(), reply_markup=profile_keyboard())

@@ -1,11 +1,13 @@
 from datetime import date, datetime
 from typing import List
+from urllib.parse import urlencode
 
 from http3.exceptions import HttpError
 
 from utils.polyrobot import api_service as APIService
 from utils.polyrobot.academic_performance import AcademicPerformance
 from utils.polyrobot.base import Deserializable
+from utils.polyrobot.preference import Preference
 from utils.polyrobot.profile import Profile
 from utils.polyrobot.schedule import ScheduledLesson
 
@@ -14,23 +16,37 @@ class User(Deserializable):
     id: int
     full_name: str
     username: str
+    preferences: List[Preference]
     is_admin: bool
 
-    def __init__(self, id: int, full_name: str, is_admin: bool, username: str = None):
-        self.id, self.full_name, self.is_admin, self.username = id, full_name, is_admin, username
+    PREFERENCES = "preferences"
 
-    @staticmethod
-    async def get(id: int):
+    def __init__(
+            self, id: int, full_name: str, is_admin: bool, username: str = None, preferences: List[Preference] = None
+    ):
+        self.id = id
+        self.full_name = full_name
+        self.is_admin = is_admin
+        self.preferences = preferences
+        self.username = username
+
+    @classmethod
+    def deserialize(cls, data: dict):
+        data[cls.PREFERENCES] = [Preference.deserialize(preference) for preference in data[cls.PREFERENCES]]
+        return super().deserialize(data)
+
+    @classmethod
+    async def get(cls, id: int):
         data = await APIService.get(f"/telegram/{id}/")
-        return User(**data)
+        return cls.deserialize(data)
 
-    @staticmethod
-    async def get_or_create(id: int, full_name: str, username: str):
+    @classmethod
+    async def get_or_create(cls, id: int, full_name: str, username: str):
         try:
             data = await APIService.get(f"/telegram/{id}/")
         except HttpError as error:
             data = await APIService.post("/telegram/", json={"id": id, "full_name": full_name, "username": username})
-        return User(**data)
+        return cls.deserialize(data)
 
     @classmethod
     async def admins(cls):
@@ -60,17 +76,18 @@ class User(Deserializable):
 
     # API to get data from PolyRobot
     async def scheduled_lesson(
-            self, date_obj: date = None, date_from: datetime = None, date_to: datetime = None
+            self, datetime_obj: date = None, datetime_from: datetime = None, datetime_to: datetime = None
     ) -> List[ScheduledLesson]:
-        url = f"/telegram/{self.id}/scheduled-lesson"
-        if date_obj:
-            url += f"?date={date_obj.strftime('%Y-%m-%d')}"
-        elif date_from or date_to:
-            if date_from:
-                url += f"?date={date_obj.strftime('%Y-%m-%d')}"
-            if date_to:
-                url += f"?date={date_obj.strftime('%Y-%m-%d')}"
+        query_params = {}
+        if datetime_obj:
+            query_params["date"] = datetime_obj.strftime('%Y-%m-%d')
+        elif datetime_from or datetime_to:
+            if datetime_from:
+                query_params["date_from"] = datetime_from.strftime('%Y-%m-%d')
+            if datetime_to:
+                query_params["date_to"] = datetime_to.strftime('%Y-%m-%d')
 
+        url = f"/telegram/{self.id}/scheduled-lesson?" + urlencode(query_params)
         return [ScheduledLesson.deserialize(scheduled_lesson) for scheduled_lesson in await APIService.get(url)]
 
     async def export_schedule(self):

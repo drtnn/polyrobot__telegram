@@ -56,5 +56,5 @@ async def bot_academic_performance_lesson_callback(call: CallbackQuery, callback
     academic_performance = [academic_performance_tmp for academic_performance_tmp in academic_performances
                             if academic_performance_tmp.id == callback_data["lesson_id"]][0]
 
-    await call.message.edit_text(text=academic_performance.to_message_text(),
+    await call.message.edit_text(text=academic_performance.button_text(),
                                  reply_markup=lesson_buttons(callback_data["semester_number"]))

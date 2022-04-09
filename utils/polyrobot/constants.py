@@ -7,3 +7,19 @@ WEEKDAYS = {
     5: "Суббота",
     6: "Воскресенье",
 }
+
+NOTIFICATION_SLUG_TO_BUTTON_TEXT = {
+    "remind-in-minutes": "⏰ Напоминания о начале занятий",
+}
+
+NOTIFICATION_SLUG_TO_UPDATE_MESSAGE_TEXT = {
+    "remind-in-minutes": "⏰ За сколько минут мне напоминать о начале занятия?",
+}
+
+NOTIFICATION_SLUG_TO_UPDATE_BUTTON_VALUES = {
+    "remind-in-minutes": [0, 5, 10, 15, 30],
+}
+
+NOTIFICATION_SLUG_TO_SWITCHABLE = {
+    "remind-in-minutes": True,
+}

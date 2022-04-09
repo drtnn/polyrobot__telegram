@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from typing import List
+from urllib.parse import urlencode
 
 from utils.polyrobot import api_service as APIService
 from utils.polyrobot.base import Deserializable
@@ -13,7 +14,7 @@ class LessonRoom(Deserializable):
     def __init__(self, number: str):
         self.number = number
 
-    def to_message_text(self) -> str:
+    def message_text(self) -> str:
         return self.number
 
 
@@ -34,11 +35,11 @@ class LessonPlace(Deserializable):
         data[cls.ROOMS] = [LessonRoom.deserialize(room) for room in data[cls.ROOMS]]
         return super().deserialize(data)
 
-    def to_message_text(self) -> str:
+    def message_text(self) -> str:
         if self.link:
             return f"🔗 <a href='{self.link}'>{self.title}</a>"
         else:
-            return f"🏫 {self.title}: " + ", ".join(room.to_message_text() for room in self.rooms)
+            return f"🏫 {self.title}: " + ", ".join(room.message_text() for room in self.rooms)
 
 
 class LessonTeacher(Deserializable):
@@ -47,7 +48,7 @@ class LessonTeacher(Deserializable):
     def __init__(self, full_name: str):
         self.full_name = full_name
 
-    def to_message_text(self) -> str:
+    def message_text(self) -> str:
         return f"<i>{self.full_name}</i>"
 
 
@@ -74,9 +75,9 @@ class Lesson(Deserializable):
         data[cls.TEACHERS] = [LessonTeacher.deserialize(teacher) for teacher in data[cls.TEACHERS]]
         return super().deserialize(data)
 
-    def to_message_text(self) -> str:
-        return f"{self.place.to_message_text()}\n<b>{self.title} ({self.type})</b>\n" + \
-               ", ".join(teacher.to_message_text() for teacher in self.teachers)
+    def message_text(self) -> str:
+        return f"{self.place.message_text()}\n<b>{self.title} ({self.type})</b>\n" + \
+               ", ".join(teacher.message_text() for teacher in self.teachers)
 
 
 class ScheduledLesson(Deserializable):
@@ -111,13 +112,13 @@ class ScheduledLesson(Deserializable):
         to_time = (self.datetime + timedelta(hours=1, minutes=30)).strftime("%H:%M")
         return f"🕘 {from_time} – {to_time}"
 
-    def to_message_text(self, with_date: bool = True) -> str:
+    def message_text(self, with_date: bool = True) -> str:
         if with_date:
             datetime_title = f"📆 <b>{self.datetime.strftime('%d.%m.%Y %H:%M')}</b>\n🎓 <b>{WEEKDAYS[self.datetime.weekday()]}</b>\n\n"
         else:
             datetime_title = self.time_text + "\n"
 
-        return datetime_title + self.lesson.to_message_text()
+        return datetime_title + self.lesson.message_text()
 
     async def notes(self):
         data = await APIService.get(f"/scheduled-lesson/{self.id}/note")
@@ -171,3 +172,37 @@ class ScheduledLessonNote(Deserializable):
 
     async def delete(self):
         await APIService.delete(f"/scheduled-lesson-note/{self.id}/")
+
+
+class ScheduledLessonNotification(Deserializable):
+    id: str
+    scheduled_lesson: ScheduledLesson
+    telegram_user: int
+    notify_at: datetime
+
+    SCHEDULED_LESSON = "scheduled_lesson"
+    NOTIFY_AT = "notify_at"
+
+    @classmethod
+    def deserialize(cls, data: dict):
+        data[cls.SCHEDULED_LESSON] = ScheduledLesson.deserialize(data[cls.SCHEDULED_LESSON])
+        data[cls.NOTIFY_AT] = datetime.fromisoformat(data[cls.NOTIFY_AT])
+        return super().deserialize(data)
+
+    @classmethod
+    async def filter(cls, notify_from: datetime = None, notify_to: datetime = None):
+        query_params = {}
+
+        if notify_from:
+            query_params['notify_from'] = notify_from.strftime('%Y-%m-%dT%H:%M:%S')
+        if notify_to:
+            query_params['notify_to'] = notify_to.strftime('%Y-%m-%dT%H:%M:%S')
+
+        url = f"/scheduled-lesson-notification?" + urlencode(query_params)
+        return [cls.deserialize(notification) for notification in await APIService.get(url)]
+
+    def __init__(self, id: str, scheduled_lesson: ScheduledLesson, telegram_user: int, notify_at: datetime):
+        self.id = id
+        self.scheduled_lesson = scheduled_lesson
+        self.telegram_user = telegram_user
+        self.notify_at = notify_at

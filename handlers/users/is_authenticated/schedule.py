@@ -24,7 +24,7 @@ from utils.polyrobot.user import User
 async def bot_schedule_command(message: Message):
     user = User(message.from_user.id, message.from_user.full_name, message.from_user.username)
     date_obj = date.today()
-    scheduled_lessons = await user.scheduled_lesson(date_obj=date_obj)
+    scheduled_lessons = await user.scheduled_lesson(datetime_obj=date_obj)
 
     await message.answer(text=schedule_message_text(date_obj=date_obj, scheduled_lessons=scheduled_lessons),
                          reply_markup=schedule_buttons(date_obj, scheduled_lessons), disable_web_page_preview=True)
@@ -37,7 +37,7 @@ async def bot_schedule_date_callback(call: CallbackQuery, callback_data: dict):
     else:
         date_obj = date.fromisoformat(callback_data["date"])
     user = User(call.from_user.id, call.from_user.full_name, call.from_user.username)
-    scheduled_lessons = await user.scheduled_lesson(date_obj=date_obj)
+    scheduled_lessons = await user.scheduled_lesson(datetime_obj=date_obj)
 
     await call.message.edit_text(text=schedule_message_text(date_obj=date_obj, scheduled_lessons=scheduled_lessons),
                                  reply_markup=schedule_buttons(date_obj=date_obj, scheduled_lessons=scheduled_lessons),
@@ -49,7 +49,7 @@ async def bot_scheduled_lesson_callback(call: CallbackQuery, callback_data: dict
     scheduled_lesson: ScheduledLesson = await ScheduledLesson.get(id=callback_data["scheduled_lesson_id"])
     notes = await scheduled_lesson.notes()
 
-    await call.message.edit_text(text=scheduled_lesson.to_message_text(),
+    await call.message.edit_text(text=scheduled_lesson.message_text(),
                                  reply_markup=scheduled_lesson_buttons(scheduled_lesson=scheduled_lesson, notes=notes),
                                  disable_web_page_preview=True)
 

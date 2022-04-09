@@ -34,8 +34,8 @@ class AcademicPerformance(Deserializable):
         self.exam_type = exam_type
         self.chair = chair
 
-        for key, value in kwargs:
+        for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def to_message_text(self):
+    def message_text(self):
         return f"🧑🏻‍🏫 <b>{self.name}</b>\n\n<b>Курс:</b> {self.course}\n<b>Форма аттестации:</b> {self.exam_type}\n<b>Дата проведения:</b> {self.exam_date.strftime('%d.%m.%Y')}\n<b>Оценка:</b> {self.grade}\n\n<b>Преподаватель:</b> <code>{self.teacher}</code>\n<b>Кафедра:</b> <code>{self.chair}</code>"

@@ -14,3 +14,8 @@ profile_callback = CallbackData("profile")
 academic_performance = CallbackData("academic_performance")
 academic_performance_semester = CallbackData("academic_performance_semester", "semester_number")
 academic_performance_lesson = CallbackData("academic_performance_lesson", "semester_number", "lesson_id")
+
+preferences_callback = CallbackData("preferences")
+preference_callback = CallbackData("preference", "preference_id")
+preference_update_value_callback = CallbackData("preference_value", "preference_id", "value")
+preference_update_enabled_callback = CallbackData("preference_enabled", "preference_id", "enabled")
