@@ -13,7 +13,7 @@ NOTIFICATION_SLUG_TO_BUTTON_TEXT = {
 }
 
 NOTIFICATION_SLUG_TO_UPDATE_MESSAGE_TEXT = {
-    "remind-in-minutes": "⏰ За сколько минут мне напоминать о начале занятия?",
+    "remind-in-minutes": "⏰ За сколько минут до начала занятия мне прислать уведомление?",
 }
 
 NOTIFICATION_SLUG_TO_UPDATE_BUTTON_VALUES = {
