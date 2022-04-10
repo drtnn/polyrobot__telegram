@@ -41,17 +41,17 @@ async def bot_preference_update_value_callback(call: CallbackQuery, callback_dat
     except HttpError:
         await call.answer("Не удалось установить значение")
     else:
-        await call.answer("Значение установлено")
-        await bot_preferences_callback(call=call, callback_data=callback_data)
+        await call.answer("✔️ Значение установлено")
+        await bot_preference_callback(call=call, callback_data=callback_data)
 
 
 @dp.callback_query_handler(preference_update_enabled_callback.filter(), state="*")
 async def bot_preference_update_enabled_callback(call: CallbackQuery, callback_data: dict):
     try:
-        preference = await Preference.update(id=callback_data["preference_id"],
+        await Preference.update(id=callback_data["preference_id"],
                                              enabled=callback_data["enabled"] == "True")
     except HttpError:
         await call.answer("Не удалось установить значение")
     else:
-        await call.answer("✔️ Включено" if preference.enabled else "❌ Отключено")
-        await bot_preferences_callback(call=call, callback_data=callback_data)
+        await call.answer("✔️ Значение установлено")
+        await bot_preference_callback(call=call, callback_data=callback_data)

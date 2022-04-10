@@ -23,7 +23,19 @@ NOTIFICATION_SLUG_TO_UPDATE_BUTTON_VALUES = {
     "notify-about-new-schedule": [],
 }
 
-NOTIFICATION_SLUG_TO_SWITCHABLE = {
-    "remind-in-minutes": True,
-    "notify-about-new-schedule": True,
+YES_SWITCH = "✔️ Да"
+NO_SWITCH = "❌ Нет"
+
+TURN_ON_FUNCTION_SWITCH = "✔️ Включить {preference}"
+TURN_OFF_FUNCTION_SWITCH = "❌ Отключить {preference}"
+
+NOTIFICATION_SLUG_TO_SWITCH_TEXT = {
+    "remind-in-minutes": {
+        0: TURN_ON_FUNCTION_SWITCH.format(preference="напоминания"),
+        1: TURN_OFF_FUNCTION_SWITCH.format(preference="напоминания")
+    },
+    "notify-about-new-schedule": {
+        0: YES_SWITCH,
+        1: NO_SWITCH
+    },
 }

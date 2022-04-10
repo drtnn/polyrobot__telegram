@@ -21,15 +21,14 @@ def preference_update_value_keyboard(preference: Preference):
     keyboard = InlineKeyboardMarkup(row_width=len(preference.update_values()))
     for value in preference.update_values():
         keyboard.insert(
-            InlineKeyboardButton(text=str(value),
+            InlineKeyboardButton(text=f"{value} ✅" if value == preference.value else str(value),
                                  callback_data=preference_update_value_callback.new(preference_id=preference.id,
                                                                                     value=value))
         )
     if preference.is_switchable():
-        switch_text = "❌ Отключить" if preference.enabled else "✔️ Включить"
         keyboard.row(
             InlineKeyboardButton(
-                text=switch_text, callback_data=preference_update_enabled_callback.new(
+                text=preference.switch_text(), callback_data=preference_update_enabled_callback.new(
                     preference_id=preference.id, enabled=not preference.enabled
                 )
             )
