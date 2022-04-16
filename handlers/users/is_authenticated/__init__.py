@@ -1,5 +1,5 @@
-from . import schedule
-from . import profile
-from . import academic_performance
-from . import export
-from . import preference
+import handlers.users.is_authenticated.schedule
+import handlers.users.is_authenticated.profile
+import handlers.users.is_authenticated.academic_performance
+import handlers.users.is_authenticated.export
+import handlers.users.is_authenticated.preference

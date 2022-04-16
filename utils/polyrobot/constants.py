@@ -8,6 +8,15 @@ WEEKDAYS = {
     6: "Воскресенье",
 }
 
+YES_SWITCH = "✔️ Да, включить {preference}"
+NO_SWITCH = "❌ Нет, отключить {preference}"
+
+TURN_ON_FUNCTION_SWITCH = "✔️ Включить {preference}"
+TURN_OFF_FUNCTION_SWITCH = "❌ Отключить {preference}"
+
+RESULT_IS_ON = "✔️ {preference} включены"
+RESULT_IS_OFF = "❌️ {preference} отключены"
+
 NOTIFICATION_SLUG_TO_BUTTON_TEXT = {
     "remind-in-minutes": "⏰ Напоминания о начале занятий",
     "notify-about-new-schedule": "🔔 Уведомление о новом расписании",
@@ -23,19 +32,24 @@ NOTIFICATION_SLUG_TO_UPDATE_BUTTON_VALUES = {
     "notify-about-new-schedule": [],
 }
 
-YES_SWITCH = "✔️ Да"
-NO_SWITCH = "❌ Нет"
-
-TURN_ON_FUNCTION_SWITCH = "✔️ Включить {preference}"
-TURN_OFF_FUNCTION_SWITCH = "❌ Отключить {preference}"
-
 NOTIFICATION_SLUG_TO_SWITCH_TEXT = {
     "remind-in-minutes": {
         0: TURN_ON_FUNCTION_SWITCH.format(preference="напоминания"),
         1: TURN_OFF_FUNCTION_SWITCH.format(preference="напоминания")
     },
     "notify-about-new-schedule": {
-        0: YES_SWITCH,
-        1: NO_SWITCH
+        0: YES_SWITCH.format(preference="уведомления"),
+        1: NO_SWITCH.format(preference="уведомления")
+    },
+}
+
+NOTIFICATION_SLUG_TO_RESULT_TEXT = {
+    "remind-in-minutes": {
+        0: RESULT_IS_OFF.format(preference="Напоминания"),
+        1: RESULT_IS_ON.format(preference="Напоминания")
+    },
+    "notify-about-new-schedule": {
+        0: RESULT_IS_OFF.format(preference="Уведомления"),
+        1: RESULT_IS_ON.format(preference="Уведомления")
     },
 }

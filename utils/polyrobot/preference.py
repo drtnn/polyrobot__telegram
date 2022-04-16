@@ -1,7 +1,7 @@
 from utils.polyrobot import api_service as APIService
 from utils.polyrobot.base import Deserializable
 from utils.polyrobot.constants import NOTIFICATION_SLUG_TO_BUTTON_TEXT, NOTIFICATION_SLUG_TO_UPDATE_MESSAGE_TEXT, \
-    NOTIFICATION_SLUG_TO_UPDATE_BUTTON_VALUES, NOTIFICATION_SLUG_TO_SWITCH_TEXT
+    NOTIFICATION_SLUG_TO_UPDATE_BUTTON_VALUES, NOTIFICATION_SLUG_TO_SWITCH_TEXT, NOTIFICATION_SLUG_TO_RESULT_TEXT
 
 
 class Preference(Deserializable):
@@ -41,3 +41,6 @@ class Preference(Deserializable):
 
     def switch_text(self):
         return NOTIFICATION_SLUG_TO_SWITCH_TEXT[self.slug][int(self.enabled)]
+
+    def result_text(self):
+        return NOTIFICATION_SLUG_TO_RESULT_TEXT[self.slug][int(self.enabled)]
