@@ -28,10 +28,13 @@ async def notify_about_scheduled_lessons(sleep_time: int = 20):
             notification: ScheduledLessonNotification
 
             notes = await notification.scheduled_lesson.notes()
-            await bot.send_message(chat_id=notification.telegram_user,
-                                   text=notification.scheduled_lesson.message_text(),
-                                   reply_markup=scheduled_lesson_buttons(scheduled_lesson=notification.scheduled_lesson,
-                                                                         notes=notes),
-                                   disable_web_page_preview=True)
+            try:
+                await bot.send_message(chat_id=notification.telegram_user,
+                                       text=notification.scheduled_lesson.message_text(),
+                                       reply_markup=scheduled_lesson_buttons(scheduled_lesson=notification.scheduled_lesson,
+                                                                             notes=notes),
+                                       disable_web_page_preview=True)
+            except Exception as e:
+                logger.info(f"NotificationSendError: {e}")
 
         await asyncio.sleep(sleep_time)
