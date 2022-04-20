@@ -17,8 +17,9 @@ async def notify_about_scheduled_lessons(sleep_time: int = 20):
 
         try:
             notifications = await ScheduledLessonNotification.filter(notify_from=last_datetime, notify_to=now)
+            logger.info(f"Notifications count: {len(notifications)}")
         except Exception as e:
-            logger.info(f"NotificationsError: {e}")
+            logger.info(f"Notifications error: {e}")
             await asyncio.sleep(sleep_time)
             continue
 
