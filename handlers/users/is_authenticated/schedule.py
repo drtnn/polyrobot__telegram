@@ -1,6 +1,6 @@
 import mimetypes
 import os
-from datetime import date
+from datetime import datetime, date
 from io import BytesIO
 from time import time_ns
 
@@ -12,7 +12,7 @@ from keyboards.inline.callback_data import schedule_callback, scheduled_lesson_c
     scheduled_lesson_add_note_callback, scheduled_lesson_note_add_file_callback, scheduled_lesson_delete_note_callback
 from keyboards.inline.schedule import schedule_buttons, scheduled_lesson_buttons, scheduled_lesson_note_buttons, \
     scheduled_lesson_add_file_buttons
-from loader import dp, bot
+from loader import dp, bot, tz
 from states.schedule import ScheduledLessonNoteState
 from utils.polyrobot.messages import schedule_message_text
 from utils.polyrobot.schedule import ScheduledLesson, ScheduledLessonNote
@@ -23,7 +23,7 @@ from utils.polyrobot.user import User
 @dp.message_handler(commands=["schedule"], is_authenticated=True, state="*")
 async def bot_schedule_command(message: Message):
     user = User(message.from_user.id, message.from_user.full_name, message.from_user.username)
-    date_obj = date.today()
+    date_obj = datetime.now(tz=tz).date()
     scheduled_lessons = await user.scheduled_lesson(datetime_obj=date_obj)
 
     await message.answer(text=schedule_message_text(date_obj=date_obj, scheduled_lessons=scheduled_lessons),
@@ -33,7 +33,7 @@ async def bot_schedule_command(message: Message):
 @dp.callback_query_handler(schedule_callback.filter(), state="*")
 async def bot_schedule_date_callback(call: CallbackQuery, callback_data: dict):
     if callback_data["date"] == ScheduledLesson.TODAY:
-        date_obj = date.today()
+        date_obj = datetime.now(tz=tz).date()
     else:
         date_obj = date.fromisoformat(callback_data["date"])
     user = User(call.from_user.id, call.from_user.full_name, call.from_user.username)

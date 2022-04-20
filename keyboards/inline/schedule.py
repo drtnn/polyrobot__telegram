@@ -1,8 +1,9 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from typing import List
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+from loader import tz
 from utils.polyrobot.constants import WEEKDAYS
 from utils.polyrobot.schedule import ScheduledLesson, ScheduledLessonNote
 from .callback_data import schedule_callback, scheduled_lesson_callback, scheduled_lesson_note_callback, \
@@ -32,7 +33,7 @@ def schedule_buttons(date_obj: date, scheduled_lessons: List[ScheduledLesson]) -
             callback_data=schedule_callback.new(date=tomorrow.isoformat())
         )
     )
-    if date.today() != date_obj:
+    if datetime.now(tz=tz).date() != date_obj:
         keyboard.add(
             InlineKeyboardButton(text="📅 Сегодня", callback_data=schedule_callback.new(date=ScheduledLesson.TODAY))
         )

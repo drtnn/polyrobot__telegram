@@ -1,9 +1,9 @@
-from datetime import date
+from datetime import datetime
 from io import BytesIO
 
 from aiogram.types import Message, InputFile
 
-from loader import dp
+from loader import dp, tz
 from utils.polyrobot.user import User
 
 
@@ -11,6 +11,6 @@ from utils.polyrobot.user import User
 async def bot_profile_command(message: Message):
     user = User(message.from_user.id, message.from_user.full_name, message.from_user.username)
     calendar = await user.export_schedule()
-    file = InputFile(BytesIO(calendar), f"Расписание от {date.today().isoformat()}.ics")
+    file = InputFile(BytesIO(calendar), f"Расписание от {datetime.now(tz=tz).date().isoformat()}.ics")
 
     await message.answer_document(file)
