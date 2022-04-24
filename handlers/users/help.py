@@ -17,6 +17,7 @@ async def bot_help_command(message: types.Message):
                 "    • /export – экспорт расписания в календарь;",
                 "    • /profile – профиль студента и приказы;",
                 "    • /performance – успеваемость студента;",
+                "    • /payments – платежи студента;",
                 "    • /preferences – настройки бота."
             ]
         ) +

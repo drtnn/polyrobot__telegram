@@ -11,11 +11,6 @@ class File(Deserializable):
 
     CREATED_AT = "created_at"
 
-    def __init__(self, id: str, created_at: datetime, data: str):
-        self.id = id
-        self.created_at = created_at
-        self.data = data
-
     @classmethod
     def deserialize(cls, data: dict):
         data[cls.CREATED_AT] = datetime.fromisoformat(data[cls.CREATED_AT])

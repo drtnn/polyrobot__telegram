@@ -11,9 +11,6 @@ from utils.polyrobot.file import File
 class LessonRoom(Deserializable):
     number: str
 
-    def __init__(self, number: str):
-        self.number = number
-
     def message_text(self) -> str:
         return self.number
 
@@ -24,11 +21,6 @@ class LessonPlace(Deserializable):
     rooms: List[LessonRoom]
 
     ROOMS = "rooms"
-
-    def __init__(self, title: str, link: str = None, rooms: List[LessonRoom] = None):
-        self.title = title
-        self.link = link
-        self.rooms = rooms
 
     @classmethod
     def deserialize(cls, data: dict):
@@ -45,9 +37,6 @@ class LessonPlace(Deserializable):
 class LessonTeacher(Deserializable):
     full_name: str
 
-    def __init__(self, full_name: str):
-        self.full_name = full_name
-
     def message_text(self) -> str:
         return f"<i>{self.full_name}</i>"
 
@@ -61,13 +50,6 @@ class Lesson(Deserializable):
 
     PLACE = "place"
     TEACHERS = "teachers"
-
-    def __init__(self, title: str, group: str, type: str, place: LessonPlace, teachers: List[LessonTeacher]):
-        self.title = title
-        self.group = group
-        self.type = type
-        self.place = place
-        self.teachers = teachers
 
     @classmethod
     def deserialize(cls, data: dict):
@@ -89,11 +71,6 @@ class ScheduledLesson(Deserializable):
     DATETIME = "datetime"
 
     TODAY = "today"
-
-    def __init__(self, id: str, lesson: Lesson, datetime: datetime):
-        self.id = id
-        self.lesson = lesson
-        self.datetime = datetime
 
     @classmethod
     def deserialize(cls, data: dict):
@@ -134,13 +111,6 @@ class ScheduledLessonNote(Deserializable):
 
     FILES = "files"
     CREATED_BY = "created_by"
-
-    def __init__(self, id: str, scheduled_lesson: str, text: str, created_by: int, files: List[File] = None):
-        self.id = id
-        self.scheduled_lesson = scheduled_lesson
-        self.text = text
-        self.created_by = created_by
-        self.files = files
 
     @classmethod
     def deserialize(cls, data: dict):
@@ -200,9 +170,3 @@ class ScheduledLessonNotification(Deserializable):
 
         url = f"/scheduled-lesson-notification?" + urlencode(query_params)
         return [cls.deserialize(notification) for notification in await APIService.get(url)]
-
-    def __init__(self, id: str, scheduled_lesson: ScheduledLesson, telegram_user: int, notify_at: datetime):
-        self.id = id
-        self.scheduled_lesson = scheduled_lesson
-        self.telegram_user = telegram_user
-        self.notify_at = notify_at

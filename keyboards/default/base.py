@@ -10,6 +10,6 @@ MENU_KEYBOARD = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(PROFILE_BUTTON)],
     [KeyboardButton(SCHEDULE_BUTTON)],
     [KeyboardButton(ACADEMIC_PERFORMANCE_BUTTON)],
+    [KeyboardButton(PAYMENTS_BUTTON)],
     [KeyboardButton(PREFERENCE_BUTTON)],
-    # [KeyboardButton(PAYMENTS_BUTTON)],
 ], resize_keyboard=True)

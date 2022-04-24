@@ -3,3 +3,4 @@ import handlers.users.is_authenticated.profile
 import handlers.users.is_authenticated.academic_performance
 import handlers.users.is_authenticated.export
 import handlers.users.is_authenticated.preference
+import handlers.users.is_authenticated.payments

@@ -7,6 +7,7 @@ from http3.exceptions import HttpError
 from utils.polyrobot import api_service as APIService
 from utils.polyrobot.academic_performance import AcademicPerformance
 from utils.polyrobot.base import Deserializable
+from utils.polyrobot.payments import Payments
 from utils.polyrobot.preference import Preference
 from utils.polyrobot.profile import Profile
 from utils.polyrobot.schedule import ScheduledLesson
@@ -21,14 +22,14 @@ class User(Deserializable):
 
     PREFERENCES = "preferences"
 
-    def __init__(
-            self, id: int, full_name: str, is_admin: bool, username: str = None, preferences: List[Preference] = None
-    ):
+    def __init__(self, id: int, full_name: str, is_admin: bool, username: str = None,
+                 preferences: List[Preference] = None, **kwargs):
         self.id = id
         self.full_name = full_name
         self.is_admin = is_admin
         self.preferences = preferences
         self.username = username
+        super().__init__(**kwargs)
 
     @classmethod
     def deserialize(cls, data: dict):
@@ -64,7 +65,7 @@ class User(Deserializable):
         return Profile.deserialize(data["user"])
 
     async def payments(self):
-        return await APIService.get(f"/telegram/{self.id}/payments/")
+        return Payments.deserialize((await APIService.get(f"/telegram/{self.id}/payments/"))["contracts"])
 
     async def academic_performance(self, semester_number: int = None):
         if semester_number:

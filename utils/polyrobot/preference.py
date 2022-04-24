@@ -11,13 +11,6 @@ class Preference(Deserializable):
     value: int
     max_value: int
 
-    def __init__(self, id: str, slug: str, enabled: bool, value: int, max_value: int):
-        self.id = id
-        self.slug = slug
-        self.enabled = enabled
-        self.value = value
-        self.max_value = max_value
-
     @classmethod
     async def get(cls, id: str):
         data = await APIService.get(f"/user-preference/{id}/")
