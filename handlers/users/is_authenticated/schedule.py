@@ -6,6 +6,8 @@ from time import time_ns
 
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, CallbackQuery
+from dateutil import parser
+from dateutil.parser import ParserError
 
 from keyboards.default.base import SCHEDULE_BUTTON
 from keyboards.inline.callback_data import schedule_callback, scheduled_lesson_callback, scheduled_lesson_note_callback, \
@@ -28,6 +30,17 @@ async def bot_schedule_command(message: Message):
 
     await message.answer(text=schedule_message_text(date_obj=date_obj, scheduled_lessons=scheduled_lessons),
                          reply_markup=schedule_buttons(date_obj, scheduled_lessons), disable_web_page_preview=True)
+
+
+@dp.message_handler(is_date=True)
+async def bot_schedule_date_regexp(message: Message):
+    date_obj = parser.parse(message.text).date()
+    user = User(message.from_user.id, message.from_user.full_name, message.from_user.username)
+    scheduled_lessons = await user.scheduled_lesson(datetime_obj=date_obj)
+
+    await message.answer(text=schedule_message_text(date_obj=date_obj, scheduled_lessons=scheduled_lessons),
+                         reply_markup=schedule_buttons(date_obj=date_obj, scheduled_lessons=scheduled_lessons),
+                         disable_web_page_preview=True)
 
 
 @dp.callback_query_handler(schedule_callback.filter(), state="*")
