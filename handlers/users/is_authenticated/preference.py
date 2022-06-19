@@ -41,7 +41,6 @@ async def bot_preference_update_value_callback(call: CallbackQuery, callback_dat
     except HttpError:
         await call.answer("🛑 Не удалось установить значение")
     else:
-        await call.answer("✔️ Значение установлено")
         await bot_preference_callback(call=call, callback_data=callback_data)
 
 

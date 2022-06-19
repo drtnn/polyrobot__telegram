@@ -110,7 +110,7 @@ def scheduled_lesson_add_file_buttons(scheduled_lesson_note: ScheduledLessonNote
 
     keyboard.add(
         InlineKeyboardButton(
-            text="✔️",
+            text="✅ Готово",
             callback_data=scheduled_lesson_note_callback.new(scheduled_lesson_note_id=scheduled_lesson_note.id)
         )
     )

@@ -19,3 +19,5 @@ preferences_callback = CallbackData("preferences")
 preference_callback = CallbackData("preference", "preference_id")
 preference_update_value_callback = CallbackData("preference_value", "preference_id", "value")
 preference_update_enabled_callback = CallbackData("preference_enabled", "preference_id", "enabled")
+
+cancel_callback = CallbackData("cancel")

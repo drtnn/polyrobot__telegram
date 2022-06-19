@@ -7,9 +7,10 @@ from time import time_ns
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, CallbackQuery
 from dateutil import parser
-from dateutil.parser import ParserError
+from http3.exceptions import HttpError
 
 from keyboards.default.base import SCHEDULE_BUTTON
+from keyboards.inline.base import cancel_keyboard
 from keyboards.inline.callback_data import schedule_callback, scheduled_lesson_callback, scheduled_lesson_note_callback, \
     scheduled_lesson_add_note_callback, scheduled_lesson_note_add_file_callback, scheduled_lesson_delete_note_callback
 from keyboards.inline.schedule import schedule_buttons, scheduled_lesson_buttons, scheduled_lesson_note_buttons, \
@@ -73,21 +74,28 @@ async def bot_scheduled_lesson_add_note_callback(call: CallbackQuery, callback_d
     await state.update_data(scheduled_lesson_id=callback_data["scheduled_lesson_id"])
     await ScheduledLessonNoteState.text.set()
 
-    await call.answer(text="🤖 Пришли текст для новой заметки ")
+    await call.answer(text="🤖 Пришли текст для новой заметки")
 
 
 @dp.message_handler(is_authenticated=True, state=ScheduledLessonNoteState.text)
 async def bot_scheduled_lesson_add_note_text(message: Message, state: FSMContext):
     data = await state.get_data()
-    note = await ScheduledLessonNote.create(created_by=message.from_user.id,
-                                            scheduled_lesson_id=data["scheduled_lesson_id"], text=message.text)
-    await state.update_data(scheduled_lesson_note_id=note.id, text=message.text)
-    await ScheduledLessonNoteState.file.set()
+    try:
+        note = await ScheduledLessonNote.create(created_by=message.from_user.id,
+                                                scheduled_lesson_id=data["scheduled_lesson_id"], text=message.text)
+    except HttpError:
+        await message.answer(
+            text="🤖 Похоже, заметка содержит нецензурную лексику. Попробуйте снова.",
+            reply_markup=cancel_keyboard()
+        )
+    else:
+        await state.update_data(scheduled_lesson_note_id=note.id, text=message.text)
+        await ScheduledLessonNoteState.file.set()
 
-    await message.answer(
-        text="🤖 Теперь можешь прислать мне файл/фото/видео, а я прикреплю его к заметке. Или нажми на кнопку ниже, чтобы сохранить заметку без вложений.",
-        reply_markup=scheduled_lesson_add_file_buttons(scheduled_lesson_note=note)
-    )
+        await message.answer(
+            text="🤖 Теперь можешь прислать мне файл/фото/видео, а я прикреплю его к заметке. Или нажми на кнопку ниже, чтобы сохранить заметку без вложений.",
+            reply_markup=scheduled_lesson_add_file_buttons(scheduled_lesson_note=note)
+        )
 
 
 @dp.message_handler(content_types=["photo", "video", "document"], is_authenticated=True,
